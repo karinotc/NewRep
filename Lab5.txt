@@ -1,13 +1,9 @@
-/*
-* Автор: Куртова Карина Александровна
-* Группа: 0302
-* Версия: 5.2
-* Формулировка: Найти наибольший элемент заштрихованной области таблицы A размера N x N
-*/
+
 
 #include<iostream>
 #include<fstream>
 #include<iomanip>
+#include<math.h>
 using namespace std;
 
 int inputArray(fstream& f, int& N, double** array, int& m, int& k) //Ввод массива
