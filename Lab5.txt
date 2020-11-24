@@ -2,9 +2,10 @@
 
 #include<iostream>
 #include<fstream>
-#include<iomanip>
-#include<math.h>
+#include<math>
 using namespace std;
+
+int x; 
 
 int inputArray(fstream& f, int& N, double** array, int& m, int& k) //Ввод массива
 {
