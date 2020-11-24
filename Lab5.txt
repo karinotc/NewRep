@@ -1,0 +1,347 @@
+/*
+* Автор: Куртова Карина Александровна
+* Группа: 0302
+* Версия: 5.2
+* Формулировка: Найти наибольший элемент заштрихованной области таблицы A размера N x N
+*/
+
+#include<iostream>
+#include<fstream>
+#include<iomanip>
+using namespace std;
+
+int inputArray(fstream& f, int& N, double** array, int& m, int& k) //Ввод массива
+{
+	int i, j;
+	char s;
+
+		f.seekg(0, std::ios::beg);
+		f << setiosflags(ios::skipws);
+		f >> m >> k;
+
+		for (i = 0; i < N; i++)
+		{
+			f << setiosflags(ios::skipws);
+			for (j = 0; j < N; j++)
+				f >> array[i][j];
+
+			f << resetiosflags(ios::skipws);
+			do
+			{
+				f >> s;
+			} while ((s != '\n') && (!f.eof()));
+		}
+
+	return 1;
+}
+
+int realArraySize(fstream& f, int& N) //Нахождение реального размера введённого массива
+{
+	int a, b;
+	char s = '!';
+	f >> a >> b;
+
+	f << resetiosflags(ios::skipws);
+
+	while (s != '\n') //Переход на строку, содержащую первую строку массива
+	{
+		do
+			f >> s;
+		while (s == ' ');
+	}
+
+	int m = 0, n = 0;
+	int size = 0;
+	float temp;
+	s = '!';
+
+	while (s != '\n')
+	{
+		f >> temp;
+		if (f.eof()) break;
+		size++;
+		do
+			f >> s;
+		while (s == ' ');
+
+		if (s != '\n') f.seekg(-1, ios::cur);
+	}
+
+	m = 1;
+	n = size;
+
+	while (1)
+	{
+		size = 0;
+		s = '!';
+
+		while (s != '\n')
+		{
+			f >> temp;
+			size++;
+
+			if (f.eof())
+			{
+				if (size != 0)
+				{
+					m++;
+					if (size < n)
+						n = size;
+
+					if (m == n)
+					{
+						N = m;
+						return 1;
+					}
+					else if (m < n)
+					{
+						N = m;
+					}
+					else if (m > n)
+						return 1;
+
+				}
+				break;
+			}
+			do
+				f >> s;
+			while (s == ' ');
+
+			if (s != '\n') f.seekg(-1, ios::cur);
+			else if (size != 0)
+			{
+				m++;
+				if (n > size)
+					n = size;
+
+				if (m == n)
+				{
+					N = m;
+					return 1;
+				}
+				else if (m < n)
+				{
+					N = m;
+				}
+				else if (m > n)
+					return 1;
+			}
+		}
+
+		if (f.eof()) break;
+	}
+	return 1;
+}
+
+
+int outputArray(fstream& f, int& N, double** array) //Вывод массива
+{
+	int i, j;
+
+	f.open("output.txt", ios_base::out);
+	if (f.bad() != 0)
+	{
+		cout << "Ошибка открытия файла вывода!\n";
+		return -1;
+	}
+	else
+	{
+		f << "Введённый массив:\n";
+		for (int i = 0; i < N; i++)
+		{
+			f << "\n\n";
+			cout << "\n\n";
+			for (int j = 0; j < N; j++)
+			{
+				f << setprecision(2) << setw(7) << array[i][j] << " ";
+				cout << setprecision(2) << setw(7) << array[i][j] << " ";
+			}
+		}
+
+		f.close();
+	}
+
+	return 1;
+}
+
+void findMax(int& N, double** array, double& max, int& m, int& k) //Нахождение максимального элемента в заданной области
+{
+	int i, j;
+	for (i = (N - 2); ; ) //Поиск максимального значения на предпоследней строке
+	{
+		for (j = 0; j < N; j++)
+		{
+			if (array[i][j] > max)
+				max = array[i][j];
+		}
+
+		if (j = N) break;
+	}
+
+	for (i = k; ; ) //Поиск максимального значения на строке k
+	{
+		for (j = 0; j <= m; j++)
+		{
+			if (array[i][j] > max)
+				max = array[i][j];
+		}
+
+		if (j > m) break;
+	}
+
+	if (k >= (N - 2)) //Поиск максимального значения на диагонали
+	{
+		int tempM1 = m, tempK1 = k, difM = 0, difK = 0;
+		if (m >= k)
+		{
+			while (tempK1 > 0)
+			{
+				tempM1--;
+				difM++;
+
+				tempK1--;
+				difK++;
+			}
+		}
+		else if (m < k)
+		{
+			while (tempM1 > 0)
+			{
+				tempM1--;
+				difM++;
+
+				tempK1--;
+				difK++;
+			}
+		}
+
+		i = 0; j = 0;
+		i = k - difK;
+		j = m - difM;
+		for (i; ; )
+		{
+			if ((i > k) && (j > m)) break;
+
+			for (j; ; )
+			{
+				if (array[i][j] > max)
+					max = array[i][j];
+				break;
+			}
+			i++;
+			j++;
+		}
+	}
+	else if (k < (N - 2))
+	{
+		int tempM1 = m, tempK1 = k, difM = 0, difK = 0;
+		if (m >= k)
+		{
+			while (tempK1 > 0)
+			{
+				tempM1--;
+				difM++;
+
+				tempK1--;
+				difK++;
+			}
+		}
+		else if (m < k)
+		{
+			while (tempM1 > 0)
+			{
+				tempM1--;
+				difM++;
+
+				tempK1--;
+				difK++;
+			}
+		}
+
+		i = 0; j = 0;
+		i = k - difK;
+		j = m - difM;
+		for (i; ; )
+		{
+			if (i == (N-2)) break;
+
+			for (j; ; )
+			{
+				if (array[i][j] > max)
+					max = array[i][j];
+				break;
+			}
+			i++;
+			j++;
+		}
+	}
+}
+
+void correctVal(int& m, int& k, int& N) //Корректировка значений m и k, если это необходимо
+{
+	//Если значения некорректны, то берётся первая строка/столбец
+	if (m > N)
+		m = 1;
+	else if (m < 0)
+		m = 1;
+
+	if (k > N)
+		k = 1;
+	else if (k < 0)
+		k = 1;
+}
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+
+	cout << "Автор: Куртова Карина Александровна\nГруппа: 0302\nВерсия : 5.2\nФормулировка : Найти наибольший элемент заштрихованной области таблицы A размера N x N\n";
+	int i, j, m = 1, k = 1, N = 0;
+	double max = -10000;
+
+	fstream f;
+
+	double** array = NULL;
+	f.open("input.txt", ios_base::in);
+	if (f.is_open())
+	{
+		realArraySize(f, N);
+
+		array = new double* [N];
+		for (i = 0; i < N; i++)
+			array[i] = new double[N];
+
+		inputArray(f, N, array, m, k);
+	}
+	f.close();
+
+	correctVal(m, k, N);
+	m--; k--;
+
+	outputArray(f, N, array);
+
+	findMax(N, array, max, m, k);
+
+	f.open("output.txt", ios_base::app);
+	if (f.bad() != 0)
+	{
+		cout << "Ошибка открытия файла вывода!";
+		return -1;
+	}
+	else
+	{
+		f << "\nРазмерность массива: N = " << N << "\n";
+		cout << "\nРазмерность массива: N = " << N << "\n";
+		f << "\n\nДля m = " << ++m << ", k = " << ++k << "\n";
+		cout << "\nДля m = " << ++m << ", k = " << ++k << "\n";
+		f << "\nМаксимальное значение на заданной области равно: max = " << max;
+		cout << "Максимальное значение на заданной области равно: max = " << max << "\n";
+	}
+
+	for (i = 0; i < N; i++)
+		delete[] array[i];
+
+	delete[] array;
+
+	return 0;
+}
